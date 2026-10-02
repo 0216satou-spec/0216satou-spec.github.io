@@ -1,0 +1,11 @@
+function n(id){const e=document.getElementById(id);return e?Number(e.value):NaN;}function s(id){const e=document.getElementById(id);return e?e.value:"";}function pct(x){return x.toLocaleString("ja-JP",{minimumFractionDigits:1,maximumFractionDigits:1})+"％";}function money(x){return Math.round(x).toLocaleString("ja-JP");}function show(main,sub){document.getElementById("resultMain").textContent=main;document.getElementById("resultSub").textContent=sub;}function bad(){show("入力を確認してください","0で割る計算や未入力の日付は計算できません。");}
+function calculate(mode){
+ if(mode==="age"||mode==="tenure"){const d=new Date(s("v1")+"T00:00:00");const t=new Date();if(isNaN(d)||d>t)return bad();let y=t.getFullYear()-d.getFullYear();let m=t.getMonth()-d.getMonth();if(t.getDate()<d.getDate())m--;if(m<0){y--;m+=12;}if(mode==="age")show(y+"歳","今日時点の満年齢です。");else show(y+"年 "+m+"か月","今日時点の勤続期間です。");return;}
+ if(mode==="days"){const a=new Date(s("v1")+"T00:00:00"),b=new Date(s("v2")+"T00:00:00");if(isNaN(a)||isNaN(b))return bad();const d=Math.round((b-a)/86400000);show(d.toLocaleString("ja-JP")+"日",d>=0?"開始日から終了日までの差です。":"終了日が開始日より前です。");return;}
+ const a=n("v1"),b=n("v2");if(!Number.isFinite(a)||(document.getElementById("v2")&&!Number.isFinite(b)))return bad();
+ if(mode==="yoy"){if(a===0)return bad();const r=b/a*100;show(pct(r),"前年差："+money(b-a)+" ／ "+(b>=a?"前年を上回っています。":"前年を下回っています。"));}
+ else if(mode==="change"){if(a===0)return bad();const r=(b-a)/a*100;show((r>0?"＋":"")+pct(r),"差額："+(b-a>0?"＋":"")+money(b-a));}
+ else if(mode==="budget"){if(a===0)return bad();const r=b/a*100;show(pct(r),"予算差："+(b-a>0?"＋":"")+money(b-a));}
+ else if(mode==="composition"){if(a===0)return bad();show(pct(b/a*100),"対象 "+money(b)+" ／ 全体 "+money(a));}
+ else if(mode==="tax"){const rate=b/100;if(rate<0)return bad();const m=s("taxMode");if(m==="exclusive"){const tax=Math.round(a*rate),inc=a+tax;show(money(inc)+"円（税込）","税抜 "+money(a)+"円 ／ 消費税 "+money(tax)+"円");}else{const ex=Math.round(a/(1+rate)),tax=a-ex;show(money(ex)+"円（税抜）","税込 "+money(a)+"円 ／ 消費税 "+money(tax)+"円");}}
+}
